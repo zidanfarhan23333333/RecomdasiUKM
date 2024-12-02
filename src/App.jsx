@@ -1,19 +1,49 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Hero from "./components/Hero";
+import Login from "./pages/Login";
+import Cart from "./pages/Cart";
+import ProductDetail from "./pages/ProductDetail";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </div>
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <Home />
+              <Footer />
+            </>
+          }
+        />
+
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/product/:id"
+          element={
+            <>
+              <Navbar />
+              <ProductDetail />
+              <Footer />
+            </>
+          }
+        />
+
+        <Route
+          path="/cart"
+          element={
+            <>
+              <Navbar />
+              <Cart />
+              <Footer />
+            </>
+          }
+        />
+      </Routes>
     </Router>
   );
 };
