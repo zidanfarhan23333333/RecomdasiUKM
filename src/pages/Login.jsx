@@ -28,7 +28,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex min-h-screen items-center justify-center bg-white">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md flex">
         <div className="w-1/2 p-8">
           <h1 className="text-3xl font-semibold mb-4">Welcome Back!!</h1>
@@ -84,7 +84,7 @@ const Login = () => {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-        <div className="w-1/2 bg-green-50 flex items-center justify-center p-8">
+        <div className="w-1/2 bg-white flex items-center justify-center p-8">
           <div className="text-center">
             <img src={Icon} alt="icon" className="w-48 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Let's shop now!!</h2>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BASE_URI;
+const BASE_URI = import.meta.env.VITE_BASE_URI;
 
 // GET ALL PRODUCTS
 export const FETCH_PRODUCTS_REQUEST = "FETCH_PRODUCTS_REQUEST";
@@ -57,9 +57,7 @@ export const fetchProducts = (id) => async (dispatch, getState) => {
   if (id) {
     dispatch(fetchProductByIdRequest());
     try {
-      const response = await axios.get(`${BASE_URL}/products/${id}`);
-
-      console.log("Product response:", response.data);
+      const response = await axios.get(`${BASE_URI}/products/${id}`);
       const currentProduct = getState().products.products.find(
         (product) => product.id === response.data.id
       );
@@ -70,23 +68,24 @@ export const fetchProducts = (id) => async (dispatch, getState) => {
           quantity: currentProduct ? currentProduct.quantity : 20,
         };
         dispatch(fetchProductByIdSuccess(updatedProduct));
+        return updatedProduct;
       } else {
         dispatch(fetchProductByIdNotFound("Product not found"));
+        return null;
       }
     } catch (error) {
-      console.error("Error fetching product by ID:", error.message);
       dispatch(fetchProductByIdError(error.message));
+      throw error;
     }
   } else {
     dispatch(fetchProductsRequest());
     try {
-      console.log("Fetching products from:", `${BASE_URL}/products`);
-      const response = await axios.get(`${BASE_URL}/products`);
+      const response = await axios.get(`${BASE_URI}/products`);
 
-      console.log("Products response:", response.data);
-
+      // Ambil state saat ini dari Redux
       const currentProducts = getState().products.products;
 
+      // Update kuantitas hanya jika produk baru
       const productsWithQuantity = response.data.map((product) => {
         const existingProduct = currentProducts.find(
           (p) => p.id === product.id
@@ -98,7 +97,6 @@ export const fetchProducts = (id) => async (dispatch, getState) => {
 
       dispatch(fetchProductsSuccess(productsWithQuantity));
     } catch (error) {
-      console.error("Error fetching products:", error.message);
       dispatch(fetchProductsError(error.message));
     }
   }
@@ -110,7 +108,7 @@ export const fetchProductsByCategory =
     dispatch(fetchProductsRequest());
     try {
       const response = await axios.get(
-        `${BASE_URL}/products/category/${category}`
+        `${BASE_URI}/products/category/${category}`
       );
 
       // Ambil state saat ini dari Redux

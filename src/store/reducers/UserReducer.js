@@ -2,10 +2,11 @@ import {
   USER_LOGIN_ERROR,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
-} from "../store/action/UserAction";
+  USER_LOGOUT,
+} from "../action/UserAction";
 
 const UserState = {
-  token: localStorage.getItem("token") || null,
+  token: null,
   loading: false,
   error: null,
 };
@@ -23,7 +24,6 @@ export const UserReducer = (state = UserState, action) => {
         ...state,
         loading: false,
         token: action.payload.token,
-        user: action.payload.user,
       };
     case USER_LOGIN_ERROR:
       return {

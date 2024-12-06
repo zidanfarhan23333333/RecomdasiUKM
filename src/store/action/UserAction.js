@@ -35,8 +35,6 @@ export const loginUser = (username, password) => async (dispatch) => {
       password,
     });
 
-    console.log(response);
-
     if (response.status === 200) {
       const { token } = response.data;
       localStorage.setItem("token", token);
@@ -69,7 +67,6 @@ export const checkToken = () => {
 
 export const getIdUser = (token) => {
   const decoded = jwtDecode(token);
-  console.log(decoded);
   const id = decoded.sub;
 
   return id;

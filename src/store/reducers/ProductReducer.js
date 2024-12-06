@@ -43,7 +43,6 @@ export const ProductReducer = (state = ProductState, action) => {
         ...state,
         loading: true,
         singleProductError: null,
-        singleProductNotFound: null, // Clear any existing not found error
       };
     case FETCH_PRODUCT_BY_ID_SUCCESS:
       return {
@@ -56,28 +55,29 @@ export const ProductReducer = (state = ProductState, action) => {
         ...state,
         loading: false,
         singleProductError: action.payload,
-        singleProductNotFound: null, // Clear any existing not found error
       };
     case FETCH_PRODUCT_BY_ID_NOT_FOUND:
       return {
         ...state,
         loading: false,
         singleProductNotFound: action.payload,
-        singleProductError: null, // Clear any existing error
       };
     case UPDATE_PRODUCT_QUANTITY: {
+      const updatedProducts = state.products.map((product) =>
+        product.id === action.payload.productId
+          ? {
+              ...product,
+              quantity: product.quantity - action.payload.quantity,
+            }
+          : product
+      );
+
       return {
         ...state,
-        products: state.products.map((product) =>
-          product.id === action.payload.productId
-            ? {
-                ...product,
-                quantity: product.quantity - action.payload.quantity,
-              }
-            : product
-        ),
+        products: updatedProducts,
       };
     }
+
     default:
       return state;
   }
