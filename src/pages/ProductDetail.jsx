@@ -56,17 +56,16 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
-      {/* Update the back button to navigate to home */}
-      <motion.Link
-        to="/"
-        className="text-blue-500 text-lg flex items-center mb-6 "
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <FiArrowLeft className="mr-2" size={20} /> {/* Home icon */}
-        Back to Home
-      </motion.Link>
+        <Link to="/" className="text-blue-500 text-lg flex items-center mb-6">
+          <FiArrowLeft className="mr-2" size={20} />
+          Back to Home
+        </Link>
+      </motion.div>
 
       {singleProductNotFound ? (
         <motion.div

@@ -9,6 +9,7 @@ import axios from "axios";
 const Navbar = () => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const tokenLocal = checkToken(); // Cek token dari localStorage
   const id = tokenLocal ? getIdUser(tokenLocal) : null; // Ambil ID user jika token ada
@@ -30,6 +31,10 @@ const Navbar = () => {
       fetchUser(); // Ambil data user saat token tersedia
     }
   }, [tokenLocal]);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
@@ -61,7 +66,6 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Bagian Kanan */}
       <div className="flex gap-6 items-center">
         {/* Icon Cart */}
         <Link
@@ -72,52 +76,34 @@ const Navbar = () => {
           <span className="ml-2">Cart</span>
         </Link>
 
-        {/* Jika Login */}
         {tokenLocal ? (
-          <div className="flex items-center gap-4">
-            <span className="text-blue-600 text-sm font-semibold">
-              Hello, {name || "User"}
-            </span>
+          <div className="relative">
             <button
-              onClick={() => dispatch(logoutUser())}
-              className="text-red-600 text-sm hover:underline"
+              onClick={toggleDropdown}
+              className="text-blue-600 text-sm font-semibold"
             >
-              Logout
+              Hello, {name || "User"}
             </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
+                <ul className="text-sm">
+                  <li className="px-4 py-2 hover:bg-gray-100">
+                    <button
+                      onClick={() => dispatch(logoutUser())}
+                      className="w-full text-left text-red-600"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         ) : (
           <Link to="/login" className="text-blue-600 text-sm hover:underline">
             Login
           </Link>
         )}
-      </div>
-
-      {/* Mobile Navigation (Hamburger Menu) */}
-      <div className="md:hidden flex items-center">
-        <button
-          type="button"
-          className="text-blue-600"
-          // Toggle mobile menu (hamburger)
-          onClick={() => {
-            const menu = document.getElementById("mobile-menu");
-            menu.classList.toggle("hidden");
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
       </div>
     </nav>
   );

@@ -124,11 +124,20 @@ const Cart = () => {
     );
   }
 
+  // Check if there are no products in the cart
+  if (!carts?.[0]?.products?.length) {
+    return (
+      <div className="bg-second-color h-screen flex justify-center items-center">
+        <h1 className="text-4xl text-third-color">Anda belum memilih item</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-second-color pt-20 gap-6">
       <div className="flex items-center gap-4">
         <Link to="/" className="flex items-center gap-4">
-          <FiArrowLeft className="ml-2" />{" "}
+          <FiArrowLeft className="ml-3" />{" "}
         </Link>
         <h1 className="text-3xl font-semibold">My Cart</h1>
       </div>
