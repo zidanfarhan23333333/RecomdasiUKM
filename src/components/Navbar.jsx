@@ -10,16 +10,15 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // Modal state
+  const tokenLocal = checkToken();
+  const id = tokenLocal ? getIdUser(tokenLocal) : null;
 
-  const tokenLocal = checkToken(); // Cek token dari localStorage
-  const id = tokenLocal ? getIdUser(tokenLocal) : null; // Ambil ID user jika token ada
-
-  // Fungsi untuk mengambil data user berdasarkan ID
   const fetchUser = async () => {
     try {
       if (id) {
         const res = await axios.get(`https://fakestoreapi.com/users/${id}`);
-        setName(res.data.username); // Simpan nama user
+        setName(res.data.username);
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error.message);
@@ -28,7 +27,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (tokenLocal) {
-      fetchUser(); // Ambil data user saat token tersedia
+      fetchUser();
     }
   }, [tokenLocal]);
 
@@ -36,16 +35,27 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleLogout = () => {
+    setShowLogoutModal(true); // Show modal when logout is clicked
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    dispatch(logoutUser()); // Dispatch logout action
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false); // Close the modal without logging out
+  };
+
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-      {/* Logo */}
       <div className="flex items-center">
         <Link to="/">
           <img src={Heal} alt="Logo" className="h-16 w-auto object-contain" />
         </Link>
       </div>
 
-      {/* Navigasi Tengah (hidden on mobile and shows on larger screens) */}
       <div className="hidden md:flex-grow flex justify-center items-center gap-x-8 ml-8">
         <ul className="flex space-x-6 text-blue-600 text-sm font-semibold">
           <li>
@@ -67,7 +77,6 @@ const Navbar = () => {
       </div>
 
       <div className="flex gap-6 items-center">
-        {/* Icon Cart */}
         <Link
           to="/cart"
           className="relative text-gray-600 text-sm flex items-center hover:underline"
@@ -89,7 +98,7 @@ const Navbar = () => {
                 <ul className="text-sm">
                   <li className="px-4 py-2 hover:bg-gray-100">
                     <button
-                      onClick={() => dispatch(logoutUser())}
+                      onClick={handleLogout} // Show logout modal
                       className="w-full text-left text-red-600"
                     >
                       Logout
@@ -105,6 +114,29 @@ const Navbar = () => {
           </Link>
         )}
       </div>
+
+      {/* Modal for Logout Confirmation */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-lg font-semibold text-center">Are you sure?</h3>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={confirmLogout}
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+              >
+                Yes
+              </button>
+              <button
+                onClick={cancelLogout}
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

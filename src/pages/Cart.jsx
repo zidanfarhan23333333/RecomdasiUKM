@@ -19,6 +19,7 @@ const Cart = () => {
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
+  const [quantityError, setQuantityError] = useState(""); // New state for error message
 
   useEffect(() => {
     if (!token) navigate("/login");
@@ -55,11 +56,21 @@ const Cart = () => {
     fetchProductsDetails();
   }, [carts, dispatch]);
 
-  const handleQuantityChange = (productId, type) => {
+  const handleQuantityChange = (productId, type, stock) => {
+    setQuantityError(""); // Reset error message
+
     setQuantities((prevQuantities) => {
       const currentQuantity = prevQuantities[productId] || 1;
-      const newQuantity =
+      let newQuantity =
         type === "increase" ? currentQuantity + 1 : currentQuantity - 1;
+
+      // Ensure quantity does not exceed stock
+      if (newQuantity > stock) {
+        setQuantityError("Sorry, the quantity exceeds the available stock.");
+        return prevQuantities; // Return previous quantities if exceeds stock
+      }
+
+      // Update quantities ensuring they don’t go below 1
       return {
         ...prevQuantities,
         [productId]: Math.max(newQuantity, 1),
@@ -89,24 +100,53 @@ const Cart = () => {
     }, 0);
 
   const handleCheckOut = () => {
-    const updatedCartProducts = carts[0].products.filter(
-      (item) => !selectedProducts[item.productId]
+    // Check if any selected product's quantity exceeds its stock
+    const invalidProduct = Object.entries(selectedProducts).find(
+      ([productId, productDetails]) => {
+        const product = productsDetails.find(
+          (product) => product.id === parseInt(productId)
+        );
+        return product && productDetails.quantity > product.stock;
+      }
     );
 
+    if (invalidProduct) {
+      // Get the product name and show error message
+      const productName = productsDetails.find(
+        (product) => product.id === parseInt(invalidProduct[0])
+      ).title;
+
+      setQuantityError(
+        `Sorry, the quantity of "${productName}" exceeds the available stock.`
+      );
+
+      // Display alert message
+      alert(
+        `Sorry, the quantity of "${productName}" exceeds the available stock.`
+      );
+      return; // Stop further execution
+    }
+
     Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
+      const updatedQuantity = productDetails.quantity;
       dispatch(
         updateProductQuantity({
           productId: parseInt(productId),
-          quantity: productDetails.quantity,
+          quantity: updatedQuantity,
         })
       );
     });
 
+    const updatedCartProducts = carts[0].products.filter(
+      (item) => selectedProducts[item.productId]
+    );
+
+    // Update the cart with selected products and their updated quantities
     const updatedCart = { ...carts[0], products: updatedCartProducts };
     dispatch(updateCart(updatedCart));
 
     setTimeout(() => {
-      navigate("/");
+      navigate("/"); // Redirect to home after checkout
     }, 1000);
   };
 
@@ -178,7 +218,11 @@ const Cart = () => {
                   <td className="text-center p-4">
                     <button
                       onClick={() =>
-                        handleQuantityChange(product.id, "decrease")
+                        handleQuantityChange(
+                          product.id,
+                          "decrease",
+                          product.stock
+                        )
                       }
                     >
                       -
@@ -186,7 +230,11 @@ const Cart = () => {
                     <span className="mx-2">{quantity}</span>
                     <button
                       onClick={() =>
-                        handleQuantityChange(product.id, "increase")
+                        handleQuantityChange(
+                          product.id,
+                          "increase",
+                          product.stock
+                        )
                       }
                     >
                       +
@@ -226,13 +274,17 @@ const Cart = () => {
               </div>
               <div className="flex justify-between mt-2">
                 <button
-                  onClick={() => handleQuantityChange(product.id, "decrease")}
+                  onClick={() =>
+                    handleQuantityChange(product.id, "decrease", product.stock)
+                  }
                 >
                   -
                 </button>
                 <span>{quantity}</span>
                 <button
-                  onClick={() => handleQuantityChange(product.id, "increase")}
+                  onClick={() =>
+                    handleQuantityChange(product.id, "increase", product.stock)
+                  }
                 >
                   +
                 </button>
@@ -241,6 +293,11 @@ const Cart = () => {
           );
         })}
       </div>
+
+      {/* Quantity error message */}
+      {quantityError && (
+        <div className="text-red-600 text-center mt-4">{quantityError}</div>
+      )}
 
       {/* Checkout */}
       <div className="flex justify-between items-center p-4">
