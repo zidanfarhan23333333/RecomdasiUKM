@@ -15,47 +15,49 @@ const Cart = () => {
   const dispatch = useDispatch();
   const token = checkToken();
   const navigate = useNavigate();
-  const MAX_QUANTITY = 20;
 
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
 
   useEffect(() => {
+    if (!token) navigate("/login");
+  }, [navigate, token]);
+
+  useEffect(() => {
     const fetchProductsDetails = async () => {
       if (carts?.[0]?.products?.length) {
         try {
           const products = carts[0].products;
-          const arr = await Promise.all(
-            products.map(async (item) =>
-              dispatch(fetchProducts(item.productId))
-            )
+          const fetchedProducts = await Promise.all(
+            products.map((item) => dispatch(fetchProducts(item.productId)))
           );
-          setProductsDetails(arr);
 
-          const initialQuantities = carts[0].products.reduce((acc, item) => {
+          setProductsDetails(fetchedProducts);
+
+          const initialQuantities = products.reduce((acc, item) => {
             acc[item.productId] = item.quantity;
             return acc;
           }, {});
           setQuantities(initialQuantities);
+
+          const initialSelection = products.reduce((acc, item) => {
+            acc[item.productId] = { quantity: item.quantity };
+            return acc;
+          }, {});
+          setSelectedProducts(initialSelection);
         } catch (err) {
           console.error("Error fetching product details:", err);
         }
       }
     };
+
     fetchProductsDetails();
   }, [carts, dispatch]);
-
-  useEffect(() => {
-    if (!token) navigate("/login");
-  }, [navigate, token]);
 
   const handleQuantityChange = (productId, type) => {
     setQuantities((prevQuantities) => {
       const currentQuantity = prevQuantities[productId] || 1;
-      if (type === "increase" && currentQuantity >= MAX_QUANTITY)
-        return prevQuantities;
-
       const newQuantity =
         type === "increase" ? currentQuantity + 1 : currentQuantity - 1;
       return {
@@ -124,11 +126,10 @@ const Cart = () => {
     );
   }
 
-  // Check if there are no products in the cart
-  if (!carts?.[0]?.products?.length) {
+  if (!productsDetails.length) {
     return (
       <div className="bg-second-color h-screen flex justify-center items-center">
-        <h1 className="text-4xl text-third-color">Anda belum memilih item</h1>
+        <h1 className="text-4xl text-third-color">No items in your cart</h1>
       </div>
     );
   }
@@ -137,11 +138,12 @@ const Cart = () => {
     <div className="min-h-screen flex flex-col bg-second-color pt-20 gap-6">
       <div className="flex items-center gap-4">
         <Link to="/" className="flex items-center gap-4">
-          <FiArrowLeft className="ml-3" />{" "}
+          <FiArrowLeft className="ml-3" /> Back
         </Link>
         <h1 className="text-3xl font-semibold">My Cart</h1>
       </div>
 
+      {/* Desktop view */}
       <div className="overflow-x-auto hidden md:block">
         <table className="w-full border-separate border-spacing-0">
           <thead>
@@ -200,7 +202,7 @@ const Cart = () => {
         </table>
       </div>
 
-      {/* Mobile cart view */}
+      {/* Mobile view */}
       <div className="flex flex-col gap-4 md:hidden">
         {productsDetails.map((product) => {
           const quantity = quantities[product.id] || 1;
@@ -240,7 +242,7 @@ const Cart = () => {
         })}
       </div>
 
-      {/* Cart total and checkout */}
+      {/* Checkout */}
       <div className="flex justify-between items-center p-4">
         <span className="text-lg font-semibold">
           Total: ${calculateTotal()}
