@@ -164,7 +164,7 @@ const ProductCard = () => {
                   Detail
                 </Link>
                 <button
-                  onClick={() => handleAddToCart(product.id, 1)} // Default to 1 quantity
+                  onClick={() => handleAddToCart(product.id, 1)}
                   className="bg-blue-800 text-white py-2 px-4 rounded-lg hover:bg-blue-700 w-1/2 text-center"
                 >
                   Add to Cart

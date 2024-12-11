@@ -19,7 +19,8 @@ const Cart = () => {
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
-  const [quantityError, setQuantityError] = useState(""); // New state for error message
+  const [quantityError, setQuantityError] = useState(""); // State for error message
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
 
   useEffect(() => {
     if (!token) navigate("/login");
@@ -67,10 +68,9 @@ const Cart = () => {
       // Ensure quantity does not exceed stock
       if (newQuantity > stock) {
         setQuantityError("Sorry, the quantity exceeds the available stock.");
-        return prevQuantities; // Return previous quantities if exceeds stock
+        return prevQuantities;
       }
 
-      // Update quantities ensuring they don’t go below 1
       return {
         ...prevQuantities,
         [productId]: Math.max(newQuantity, 1),
@@ -111,22 +111,19 @@ const Cart = () => {
     );
 
     if (invalidProduct) {
-      // Get the product name and show error message
       const productName = productsDetails.find(
         (product) => product.id === parseInt(invalidProduct[0])
       ).title;
 
-      setQuantityError(
-        `Sorry, the quantity of "${productName}" exceeds the available stock.`
+      // Display an alert if quantity exceeds available stock
+      window.alert(
+        `Maaf, kuantitas produk "${productName}" melebihi stok yang tersedia.`
       );
 
-      // Display alert message
-      alert(
-        `Sorry, the quantity of "${productName}" exceeds the available stock.`
-      );
-      return; // Stop further execution
+      return; // Stop checkout process
     }
 
+    // Proceed with checkout if no quantity issues
     Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
       const updatedQuantity = productDetails.quantity;
       dispatch(
@@ -148,6 +145,10 @@ const Cart = () => {
     setTimeout(() => {
       navigate("/"); // Redirect to home after checkout
     }, 1000);
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Close modal when clicked
   };
 
   if (loading) {
@@ -250,65 +251,29 @@ const Cart = () => {
         </table>
       </div>
 
-      {/* Mobile view */}
-      <div className="flex flex-col gap-4 md:hidden">
-        {productsDetails.map((product) => {
-          const quantity = quantities[product.id] || 1;
-          return (
-            <div key={product.id} className="flex flex-col bg-main-color p-4">
-              <div className="flex items-center gap-4">
-                <input
-                  type="checkbox"
-                  checked={!!selectedProducts[product.id]}
-                  onChange={() => handleCheckboxChange(product.id)}
-                />
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="h-20 w-20 object-contain"
-                />
-                <div>
-                  <h3>{product.title}</h3>
-                  <p>${product.price}</p>
-                </div>
-              </div>
-              <div className="flex justify-between mt-2">
-                <button
-                  onClick={() =>
-                    handleQuantityChange(product.id, "decrease", product.stock)
-                  }
-                >
-                  -
-                </button>
-                <span>{quantity}</span>
-                <button
-                  onClick={() =>
-                    handleQuantityChange(product.id, "increase", product.stock)
-                  }
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Quantity error message */}
-      {quantityError && (
-        <div className="text-red-600 text-center mt-4">{quantityError}</div>
+      {/* Modal for quantity error */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+            <h2 className="text-xl font-semibold text-red-600">Error</h2>
+            <p className="mt-4 text-red-600">{quantityError}</p>
+            <button
+              className="mt-6 px-4 py-2 bg-red-600 text-white rounded"
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Checkout */}
-      <div className="flex justify-between items-center p-4">
-        <span className="text-lg font-semibold">
-          Total: ${calculateTotal()}
-        </span>
+      <div className="flex justify-between px-6">
+        <h3 className="text-xl font-semibold">Total: ${calculateTotal()}</h3>
         <button
-          className="bg-blue-800 text-white p-3 rounded-md"
+          className="bg-main-color py-2 px-4 rounded text-blue-600"
           onClick={handleCheckOut}
         >
-          Checkout
+          Check Out
         </button>
       </div>
     </div>
