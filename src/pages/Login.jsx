@@ -24,11 +24,14 @@ const Login = () => {
         const response = await fetch("https://fakestoreapi.com/users");
         const data = await response.json();
 
-        setUsers(data);
+        // Filter users to only show "johnd"
+        const johndUser = data.filter((user) => user.username === "johnd");
 
-        if (data.length > 0) {
-          setSelectedUser(data[0].username);
-          setPassword(data[0].password);
+        setUsers(johndUser);
+
+        if (johndUser.length > 0) {
+          setSelectedUser(johndUser[0].username);
+          setPassword(johndUser[0].password); // Assuming password is part of user data
         }
       } catch (err) {
         console.error("Failed to fetch users:", err);

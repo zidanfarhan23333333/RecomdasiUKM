@@ -7,7 +7,6 @@ import {
 
 const CartState = {
   carts: [],
-  totalItems: 0,
   loading: false,
   error: null,
 };
@@ -38,55 +37,27 @@ export const CartReducer = (state = CartState, action) => {
             updatedProducts.push(newProduct);
           }
         });
-
-        const updatedCarts = state.carts.map((cart) =>
-          cart.userId === action.payload.userId
-            ? { ...cart, products: updatedProducts }
-            : cart
-        );
-
-        // Hitung totalItems
-        const totalItems = updatedCarts.reduce(
-          (sum, cart) =>
-            sum +
-            cart.products.reduce(
-              (cartSum, product) => cartSum + product.quantity,
-              0
-            ),
-          0
-        );
-
         return {
           ...state,
           loading: false,
-          carts: updatedCarts,
-          totalItems, // Perbarui totalItems
+          carts: state.carts.map((cart) =>
+            cart.userId === action.payload.userId
+              ? { ...cart, products: updatedProducts }
+              : cart
+          ),
         };
       } else {
-        const newCart = {
-          userId: action.payload.userId,
-          date: action.payload.date,
-          products: action.payload.products,
-        };
-
-        const updatedCarts = [...state.carts, newCart];
-
-        // Hitung totalItems
-        const totalItems = updatedCarts.reduce(
-          (sum, cart) =>
-            sum +
-            cart.products.reduce(
-              (cartSum, product) => cartSum + product.quantity,
-              0
-            ),
-          0
-        );
-
         return {
           ...state,
           loading: false,
-          carts: updatedCarts,
-          totalItems, // Perbarui totalItems
+          carts: [
+            ...state.carts,
+            {
+              userId: action.payload.userId,
+              date: action.payload.date,
+              products: action.payload.products,
+            },
+          ],
         };
       }
     }
@@ -96,31 +67,10 @@ export const CartReducer = (state = CartState, action) => {
         loading: false,
         error: action.payload,
       };
-    case UPDATE_CART: {
-      const updatedCarts = [action.payload];
-
-      // Hitung totalItems
-      const totalItems = updatedCarts.reduce(
-        (sum, cart) =>
-          sum +
-          cart.products.reduce(
-            (cartSum, product) => cartSum + product.quantity,
-            0
-          ),
-        0
-      );
-
+    case UPDATE_CART:
       return {
         ...state,
-        carts: updatedCarts,
-        totalItems, // Perbarui totalItems
-      };
-    }
-    case "CHECKOUT_CART":
-      return {
-        ...state,
-        carts: [],
-        totalItems: 0, // Reset totalItems
+        carts: [action.payload],
       };
     default:
       return state;

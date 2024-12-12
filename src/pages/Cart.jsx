@@ -19,23 +19,27 @@ const Cart = () => {
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCheckoutError, setShowCheckoutError] = useState(false);
+  const [showCheckoutSucccess, setShowCheckoutSucccess] = useState(false);
   const [productToRemove, setProductToRemove] = useState(null);
-  const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
 
   useEffect(() => {
     const fetchProductsDetails = async () => {
       if (carts?.[0]?.products?.length) {
         try {
           const products = carts[0].products;
-          const arr = await Promise.all(
+          console.log("Carts data: ", carts);
+          let arr = [];
+
+          await Promise.all(
             products.map(async (item) => {
               const response = await dispatch(fetchProducts(item.productId));
-              return response;
+              arr.push(response);
             })
           );
           setProductsDetails(arr);
 
-          const initialQuantities = {};
+          let initialQuantities = {};
           carts[0].products.forEach((item) => {
             initialQuantities[item.productId] = item.quantity;
           });
@@ -57,7 +61,7 @@ const Cart = () => {
 
   const handleQuantityChange = (productId, type) => {
     setQuantities((prevQuantities) => {
-      const newQuantity =
+      let newQuantity =
         type === "increase"
           ? prevQuantities[productId] + 1
           : prevQuantities[productId] - 1;
@@ -65,10 +69,25 @@ const Cart = () => {
       if (newQuantity < 1) {
         setProductToRemove(productId);
         setShowConfirmModal(true);
-        return prevQuantities;
+        newQuantity = 1;
       }
 
-      return { ...prevQuantities, [productId]: newQuantity };
+      const updatedQuantities = {
+        ...prevQuantities,
+        [productId]: Math.max(newQuantity, 1),
+      };
+
+      setSelectedProducts((prevSelected) => {
+        if (prevSelected[productId]) {
+          return {
+            ...prevSelected,
+            [productId]: { quantity: updatedQuantities[productId] },
+          };
+        }
+        return prevSelected;
+      });
+
+      return updatedQuantities;
     });
   };
 
@@ -80,81 +99,110 @@ const Cart = () => {
     const updatedCart = { ...carts[0], products: updatedCartProducts };
     dispatch(updateCart(updatedCart));
     setShowConfirmModal(false);
+    window.location.reload();
+  };
+
+  const handleCancelRemove = () => {
+    setShowConfirmModal(false);
   };
 
   const handleCheckboxChange = (productId) => {
     setSelectedProducts((prevSelected) => {
-      const updatedSelected = { ...prevSelected };
-      if (updatedSelected[productId]) {
-        delete updatedSelected[productId];
+      const newSelected = { ...prevSelected };
+
+      if (newSelected[productId]) {
+        delete newSelected[productId];
       } else {
-        updatedSelected[productId] = { quantity: quantities[productId] || 1 };
+        newSelected[productId] = {
+          quantity: quantities[productId] || 1,
+        };
       }
-      return updatedSelected;
+
+      return newSelected;
     });
   };
-
   const calculateTotal = () => {
-    return productsDetails.reduce((total, product) => {
+    let total = 0;
+    productsDetails.forEach((product) => {
       if (selectedProducts[product.id]) {
-        return total + product.price * quantities[product.id];
+        const quantity = quantities[product.id] || 1;
+        total += product.price * quantity;
       }
-      return total;
-    }, 0);
+    });
+    return total;
   };
 
   const handleCheckOut = () => {
-    const isStockValid = Object.entries(selectedProducts).every(
-      ([productId, productDetails]) => {
-        const product = productsDetails.find(
-          (item) => item.id === parseInt(productId)
-        );
-        return product && productDetails.quantity <= product.quantity;
-      }
-    );
+    let hasError = false;
 
-    if (!isStockValid) {
-      alert("Some products exceed available stock!");
+    Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
+      if (hasError) return;
+
+      const product = productsDetails.find((p) => p.id === parseInt(productId));
+      const quantity = productDetails.quantity;
+
+      if (quantity > product.quantity) {
+        hasError = true;
+        setShowCheckoutError(true);
+        return;
+      }
+    });
+
+    if (hasError) {
       return;
     }
 
     Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
+      const quantity = productDetails.quantity;
+
       dispatch(
-        updateProductQuantity({
-          productId: parseInt(productId),
-          quantity: productDetails.quantity,
-        })
+        updateProductQuantity({ productId: parseInt(productId), quantity })
       );
+
+      const updatedCartProducts = carts[0].products.filter(
+        (item) => !selectedProducts[item.productId]
+      );
+
+      const updatedCart = { ...carts[0], products: updatedCartProducts };
+      dispatch(updateCart(updatedCart));
     });
 
-    setShowCheckoutSuccess(true); // Show checkout success message
+    setShowCheckoutSucccess(true);
   };
 
   const handleCloseSuccess = () => {
-    setShowCheckoutSuccess(false);
+    setShowCheckoutSucccess(false);
     setTimeout(() => {
-      navigate("/"); // Redirect to home page after success
+      navigate("/");
     }, 500);
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-200">
+        <h1 className="text-2xl text-gray-700">Loading...</h1>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center py-10">Error loading cart</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-red-100">
+        <h1 className="text-2xl text-red-600">Error loading cart</h1>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex items-center space-x-2 mb-6">
+      <div className="flex items-center space-x-2 mb-6 px-6 py-4 bg-white shadow-md rounded-lg">
         <Link to="/" className="text-blue-500 hover:text-blue-700">
           <FaArrowLeft />
         </Link>
-        <h1 className="text-2xl font-semibold">My Cart</h1>
+        <h1 className="text-2xl font-semibold text-gray-700">My Cart</h1>
       </div>
 
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg p-6">
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg p-6 mx-6 mb-6">
         <table className="w-full table-auto">
           <thead>
             <tr className="text-left bg-gray-100">
@@ -169,7 +217,7 @@ const Cart = () => {
               const quantity = quantities[product.id] || 0;
               return (
                 <tr key={product.id} className="border-t">
-                  <td className="py-2 px-4">
+                  <td className="py-2 px-4 flex items-center">
                     <input
                       type="checkbox"
                       checked={!!selectedProducts[product.id]}
@@ -177,13 +225,13 @@ const Cart = () => {
                       className="mr-2"
                     />
                     <img
-                      src={product.image} // Assuming `image` is the field holding the image URL
+                      src={product.image}
                       alt={product.title}
-                      className="w-12 h-12 object-cover rounded-md mr-4"
+                      className="w-16 h-16 object-cover rounded-md mr-4"
                     />
-                    {product.title}
+                    <span className="text-gray-700">{product.title}</span>
                   </td>
-                  <td className="py-2 px-4">${product.price}</td>
+                  <td className="py-2 px-4 text-gray-600">${product.price}</td>
                   <td className="py-2 px-4 flex items-center space-x-2">
                     <button
                       onClick={() =>
@@ -193,7 +241,7 @@ const Cart = () => {
                     >
                       <FaMinus />
                     </button>
-                    {quantity}
+                    <span className="text-gray-700">{quantity}</span>
                     <button
                       onClick={() =>
                         handleQuantityChange(product.id, "increase")
@@ -203,33 +251,38 @@ const Cart = () => {
                       <FaPlus />
                     </button>
                   </td>
-                  <td className="py-2 px-4">${product.price * quantity}</td>
+                  <td className="py-2 px-4 text-gray-600">
+                    ${product.price * quantity}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
 
-        <div className="mt-4 flex justify-between items-center">
-          <div className="font-semibold text-xl">
+        <div className="mt-6 flex justify-between items-center">
+          <div className="font-semibold text-xl text-gray-800">
             Total: ${calculateTotal()}
           </div>
           <button
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md"
             onClick={handleCheckOut}
-            className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
           >
             Checkout
           </button>
         </div>
       </div>
 
-      {showCheckoutSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
-            <h2 className="text-xl font-semibold">Checkout Successful!</h2>
+      {/* Checkout error modal */}
+      {showCheckoutError && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-red-600">
+              Insufficient stock for some products.
+            </h2>
             <button
-              onClick={handleCloseSuccess}
-              className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
+              onClick={() => setShowCheckoutError(false)}
             >
               Close
             </button>
@@ -237,25 +290,42 @@ const Cart = () => {
         </div>
       )}
 
+      {/* Checkout success modal */}
+      {showCheckoutSucccess && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-green-600">
+              Checkout successful!
+            </h2>
+            <button
+              className="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+              onClick={handleCloseSuccess}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Remove product confirmation modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
-            <h2 className="text-xl font-semibold">Are you sure?</h2>
-            <p className="my-4">
-              You are about to remove this product from your cart.
-            </p>
-            <div className="flex gap-4 justify-end">
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-700">
+              Are you sure you want to remove this product from the cart?
+            </h2>
+            <div className="mt-4 flex space-x-4">
               <button
-                onClick={handleConfirmRemove}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md"
+                onClick={handleCancelRemove}
               >
-                Yes
+                Cancel
               </button>
               <button
-                onClick={() => setShowConfirmModal(false)}
-                className="bg-gray-300 text-black px-4 py-2 rounded-md hover:bg-gray-400"
+                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
+                onClick={handleConfirmRemove}
               >
-                No
+                Remove
               </button>
             </div>
           </div>

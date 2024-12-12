@@ -14,14 +14,19 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const token = checkToken();
   const [quantity, setQuantity] = useState(1);
+  const [showAddToCartError, setShowAddToCartError] = useState(false);
 
   const { singleProduct, loading, singleProductNotFound } = useSelector(
     (state) => state.products
   );
 
   useEffect(() => {
-    dispatch(fetchProducts(id));
-  }, [dispatch, id]);
+    if (!token) {
+      navigate("/login");
+    } else {
+      dispatch(fetchProducts(id));
+    }
+  }, [dispatch, id, token, navigate]);
 
   const handleMinus = () => {
     if (quantity > 1) {
@@ -33,15 +38,25 @@ const ProductDetail = () => {
     setQuantity(quantity + 1);
   };
 
-  const handleAddToCart = (productId) => {
-    if (!token) {
-      navigate("/login");
+  const handleAddToCart = () => {
+    if (quantity > singleProduct.quantity) {
+      setShowAddToCartError(true);
     } else {
-      const date = new Date();
-      const formattedDate = date.toISOString().split("T")[0];
-      const userId = getIdUser(token);
-      const productDataToCart = { productId, quantity };
+      setShowAddToCartError(false);
 
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
+      const userId = getIdUser(token);
+      const productDataToCart = {
+        productId: singleProduct.id,
+        quantity,
+      };
+
+      // Add product to cart
       dispatch(addToCart(userId, formattedDate, [productDataToCart]));
     }
   };
@@ -144,9 +159,16 @@ const ProductDetail = () => {
               </button>
             </div>
 
+            {/* Error message if quantity exceeds stock */}
+            {showAddToCartError && (
+              <p className="text-red-600 text-sm mt-2">
+                Not enough stock available.
+              </p>
+            )}
+
             {/* Add to Cart Button */}
             <motion.button
-              onClick={() => handleAddToCart(singleProduct.id)}
+              onClick={handleAddToCart}
               className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold flex items-center justify-center gap-2 hover:bg-blue-700"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}

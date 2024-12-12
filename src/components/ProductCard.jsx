@@ -152,7 +152,6 @@ const ProductCard = () => {
                 Quantity: {product.quantity}
               </p>
 
-              {/* Product Rating */}
               <StarRating rating={product.rating?.rate || 0} />
 
               {/* Action Buttons */}
