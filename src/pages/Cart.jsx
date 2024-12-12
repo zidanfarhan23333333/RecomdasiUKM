@@ -19,8 +19,8 @@ const Cart = () => {
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
-  const [quantityError, setQuantityError] = useState(""); // State for error message
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [quantityError, setQuantityError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!token) navigate("/login");
@@ -58,14 +58,13 @@ const Cart = () => {
   }, [carts, dispatch]);
 
   const handleQuantityChange = (productId, type, stock) => {
-    setQuantityError(""); // Reset error message
+    setQuantityError("");
 
     setQuantities((prevQuantities) => {
       const currentQuantity = prevQuantities[productId] || 1;
       let newQuantity =
         type === "increase" ? currentQuantity + 1 : currentQuantity - 1;
 
-      // Ensure quantity does not exceed stock
       if (newQuantity > stock) {
         setQuantityError("Sorry, the quantity exceeds the available stock.");
         return prevQuantities;
@@ -148,7 +147,7 @@ const Cart = () => {
   };
 
   const closeModal = () => {
-    setShowModal(false); // Close modal when clicked
+    setShowModal(false);
   };
 
   if (loading) {
