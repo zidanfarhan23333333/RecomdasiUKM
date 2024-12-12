@@ -65,18 +65,23 @@ const Cart = () => {
       let newQuantity =
         type === "increase" ? currentQuantity + 1 : currentQuantity - 1;
 
+      if (newQuantity < 1) {
+        newQuantity = 1;
+      }
+
       if (newQuantity > stock) {
-        setQuantityError("Sorry, the quantity exceeds the available stock.");
+        setQuantityError(
+          `Sorry, the quantity exceeds the available stock of ${stock}.`
+        );
         return prevQuantities;
       }
 
       return {
         ...prevQuantities,
-        [productId]: Math.max(newQuantity, 1),
+        [productId]: newQuantity,
       };
     });
   };
-
   const handleCheckboxChange = (productId) => {
     setSelectedProducts((prevSelected) => {
       const newSelected = { ...prevSelected };
@@ -114,12 +119,10 @@ const Cart = () => {
         (product) => product.id === parseInt(invalidProduct[0])
       ).title;
 
-      // Display an alert if quantity exceeds available stock
-      window.alert(
-        `Maaf, kuantitas produk "${productName}" melebihi stok yang tersedia.`
+      setQuantityError(
+        `Sorry, the quantity of ${productName} exceeds the available stock.`
       );
-
-      return; // Stop checkout process
+      return;
     }
 
     // Proceed with checkout if no quantity issues
@@ -137,15 +140,13 @@ const Cart = () => {
       (item) => selectedProducts[item.productId]
     );
 
-    // Update the cart with selected products and their updated quantities
     const updatedCart = { ...carts[0], products: updatedCartProducts };
     dispatch(updateCart(updatedCart));
 
     setTimeout(() => {
-      navigate("/"); // Redirect to home after checkout
+      navigate("/");
     }, 1000);
   };
-
   const closeModal = () => {
     setShowModal(false);
   };
