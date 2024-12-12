@@ -140,10 +140,6 @@ const ProductCard = () => {
                 {product.title}
               </h2>
 
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
-                {product.description || "No description available."}
-              </p>
-
               <p className="text-gray-700 text-base mb-4 font-semibold">
                 ${product.price}
               </p>
