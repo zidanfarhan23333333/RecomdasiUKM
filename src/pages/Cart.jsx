@@ -278,7 +278,7 @@ const Cart = () => {
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold text-red-600">
-              Insufficient stock for some products.
+              Quantity not met sorry
             </h2>
             <button
               className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
