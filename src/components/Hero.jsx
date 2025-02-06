@@ -1,67 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import Hero1 from "../assets/hero1.png";
-import Var2 from "../assets/var2.png";
-import Var3 from "../assets/var3.png";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
+import Banner from "../assets/2.jpg";
+import { FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 
 const Hero = () => {
-  const images = [Hero1, Var2, Var3];
-  const [currentImage, setCurrentImageIndex] = useState(0);
-  const Navigate = useNavigate();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [images.length]);
-
-  const [ref, inView] = useInView({ threshold: 0.1 });
-
-  const handleClick = () => {
-    Navigate("/cart");
-  };
-
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{
-        opacity: inView ? 1 : 0.5,
-        y: inView ? 0 : 50,
-      }}
-      transition={{ duration: 1 }}
-      className="bg-[#f3f4f6] px-6 py-12 md:px-16 md:py-16"
-    >
-      <div className="flex flex-col md:flex-row items-center justify-between bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center md:text-left flex-1">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#2c3e50]">
-            HealShop Exclusive Deals
-          </h1>
-          <p>
-            Discover the best deals on health and wellness products. Up to{" "}
-            <span className="text-blue-600 font-bold">50% OFF</span> on selected
-          </p>
-          <button
-            onClick={handleClick}
-            className="mt-6 px-8 py-2 bg-blue-600 text-white font-semibold rounded-lg"
-          >
-            Shop Now
-          </button>
-        </div>
-        <div className="mt-8 md:mt-0 flex-1">
-          <img
-            src={images[currentImage]}
-            alt="hero"
-            className="max-w-full h-auto rounded-lg"
-          />
-        </div>
+    <section className="relative h-screen flex items-center px-10 text-white">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center brightness-50"
+        style={{ backgroundImage: `url(${Banner})` }}
+      ></div>
+
+      {/* Gradient Biru di Bagian Bawah */}
+      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-blue-900 via-transparent to-transparent"></div>
+
+      {/* Content */}
+      <div className="relative z-10 container mx-auto ml-20 md:ml-40 lg:ml-48">
+        {/* Gunakan margin lebih besar untuk sejajar dengan logo */}
+        <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+          Temukan <span className="text-white">pelatih terbaik</span>
+        </h1>
+        <h2 className="text-5xl md:text-7xl font-bold text-yellow-400">
+          Di UKM Olahraga Unimma
+        </h2>
+        <p className="mt-4 text-lg">
+          Unit Kegiatan Mahasiswa Olahraga Universitas Muhammadiyah Magelang
+        </p>
+
+        {/* Tombol */}
+        <Link
+          to="/cari-pelatih"
+          className="mt-6 inline-block bg-yellow-400 text-blue-900 font-semibold px-6 py-3 rounded-lg hover:bg-yellow-300 transition"
+        >
+          Cari Pelatih Sekarang Juga →
+        </Link>
       </div>
-    </motion.div>
+
+      {/* Social Media Floating Buttons */}
+      <div className="absolute bottom-10 right-10 space-y-3">
+        <a
+          href="#"
+          className="block p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+        >
+          <FaFacebookF size={24} />
+        </a>
+        <a
+          href="#"
+          className="block p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+        >
+          <FaTiktok size={24} />
+        </a>
+        <a
+          href="#"
+          className="block p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+        >
+          <FaInstagram size={24} />
+        </a>
+      </div>
+    </section>
   );
 };
 

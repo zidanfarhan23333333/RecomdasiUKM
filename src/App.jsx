@@ -1,51 +1,25 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Cart from "./pages/Cart";
-import ProductDetail from "./pages/ProductDetail";
 import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Tentang from "./pages/Tentang";
+import About from "./pages/About";
+import Layanan from "./pages/Layanan";
 
-const App = () => {
+function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Navbar />
-              <Home />
-              <Footer />
-            </>
-          }
-        />
-
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/product/:id"
-          element={
-            <>
-              <Navbar />
-              <ProductDetail />
-              <Footer />
-            </>
-          }
-        />
-
-        <Route
-          path="/cart"
-          element={
-            <>
-              <Navbar />
-              <Cart />
-              <Footer />
-            </>
-          }
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/tentang" element={<Tentang />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/layanan" element={<Layanan />} />
       </Routes>
+      <Footer />
     </Router>
   );
-};
+}
 
 export default App;

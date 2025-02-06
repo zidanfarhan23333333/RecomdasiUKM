@@ -1,11 +1,12 @@
+import React from "react";
 import Hero from "../components/Hero";
-import ProductCard from "../components/ProductCard";
+import Divisi from "../components/Divisi";
 
 const Home = () => {
   return (
     <div>
       <Hero />
-      <ProductCard />
+      <Divisi />
     </div>
   );
 };
