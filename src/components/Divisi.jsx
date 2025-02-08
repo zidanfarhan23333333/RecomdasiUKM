@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion"; // ✅ Import framer-motion
 import Futsal from "../assets/futsal.png";
 import Basket from "../assets/basket.png";
 import Bulutangkis from "../assets/bulutangkis.png";
@@ -7,6 +8,15 @@ import Tkd from "../assets/tkd.png";
 import Esport from "../assets/esport.png";
 
 const Divisi = () => {
+  const divisiList = [
+    { name: "Divisi Futsal", img: Futsal },
+    { name: "Divisi Voli", img: Voli },
+    { name: "Divisi Basket", img: Basket },
+    { name: "Divisi Bulutangkis", img: Bulutangkis },
+    { name: "Divisi Taekwondo", img: Tkd },
+    { name: "Divisi E-Sport", img: Esport },
+  ];
+
   return (
     <section className="py-16 px-4 max-w-7xl mx-auto">
       <h2 className="text-3xl md:text-4xl font-bold text-left mb-4 border-l-4 border-blue-500 pl-4">
@@ -22,34 +32,29 @@ const Divisi = () => {
       <button className="bg-blue-600 text-white py-2 px-4 rounded-lg mb-6">
         Lihat Semua
       </button>
+
+      {/* Grid Divisi */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi Futsal</h3>
-          <img src={Futsal} alt="Futsal" className="mb-2" />
-        </div>
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi Voli</h3>
-          <img src={Voli} alt="Voli" className="mb-2" />
-        </div>
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi Basket</h3>
-          <img src={Basket} alt="Basket" className="mb-2" />
-        </div>
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi Bulutangkis</h3>
-          <img src={Bulutangkis} alt="Bulutangkis" className="mb-2" />
-        </div>
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi Taekwondo</h3>
-          <img src={Tkd} alt="Taekwondo" className="mb-2" />
-        </div>
-        <div className="text-center p-4 border rounded-lg shadow-lg hover:shadow-lg transition bg-blue-700">
-          <h3 className="font-semibold text-white">Divisi E-Sport</h3>
-          <img src={Esport} alt="E-Sport" className="mb-2" />
-        </div>
+        {divisiList.map((divisi, index) => (
+          <div
+            key={index}
+            className="text-center p-4 border rounded-lg shadow-lg hover:shadow-xl transition bg-blue-700"
+          >
+            <h3 className="font-semibold text-white">{divisi.name}</h3>
+            {/* Hanya logonya yang bergerak naik-turun */}
+            <motion.img
+              src={divisi.img}
+              alt={divisi.name}
+              className="mt-2 w-32 h-32 mx-auto object-contain" // ✅ Perbesar logo
+              initial={{ y: 0 }}
+              animate={{ y: [0, -10, 0] }} // ✅ Efek floating hanya pada logo
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+        ))}
       </div>
 
-      {/* text berjalan */}
+      {/* Text Berjalan */}
       <div className="overflow-hidden mt-6">
         <div className="whitespace-nowrap text-xl font-semibold text-blue-700 animate-marquee">
           Divisi Futsal • Divisi Voli • Divisi Basket • Divisi Bulutangkis •
@@ -57,7 +62,7 @@ const Divisi = () => {
         </div>
       </div>
 
-      {/* animasi */}
+      {/* Animasi */}
       <style>
         {`
           @keyframes marquee {
