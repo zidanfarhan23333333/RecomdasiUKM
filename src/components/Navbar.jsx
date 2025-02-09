@@ -10,7 +10,7 @@ const Navbar = () => {
         <img src={UKM} alt="UKM Logo" className="h-12" />
 
         {/* Menu */}
-        <ul className="flex space-x-8 text-white font-medium">
+        <ul className="flex space-x-8 text-black font-medium">
           <li>
             <Link
               to="/"
