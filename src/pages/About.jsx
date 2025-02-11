@@ -1,10 +1,35 @@
-import React from "react";
+import { useState } from "react";
 import Sejarah from "../assets/2.jpg";
 import Farhan from "../assets/Farhan.jpg";
 import Ucup from "../assets/ucup.png";
 import { motion } from "framer-motion";
+import { FaStar } from "react-icons/fa";
 
 const About = () => {
+  const [reviews, setReviews] = useState([
+    {
+      name: "Farhan Azidan",
+      review: "Sangat membantu dalam meningkatkan prestasi olahraga di kampus!",
+      rating: 5,
+    },
+    {
+      name: "Restu",
+      review: "Program kerja yang sangar inovativ",
+      rating: 4.5,
+    },
+  ]);
+  const [newReview, setNewReview] = useState({
+    name: "",
+    review: "",
+    rating: 0,
+  });
+
+  const handleReviewSubmit = () => {
+    if (newReview.name && newReview.review && newReview.rating > 0) {
+      setReviews([...reviews, newReview]);
+      setNewReview({ name: "", review: "", rating: 0 });
+    }
+  };
   return (
     <section className="py-16 px-4 max-w-7xl mx-auto">
       <h2 className="text-5xl md:text-4xl font-bold text-left mb-4 mt-20 border-l-4 border-blue-500 pl-4">
@@ -110,6 +135,70 @@ const About = () => {
             </p>
           </div>
         </motion.div>
+      </div>
+
+      {/* Review Pengguna */}
+      <h2 className="text-5xl md:text-4xl font-bold text-left mb-4 mt-20 border-l-4 border-blue-500 pl-4">
+        Review Pengguna
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {reviews.map((review, index) => (
+          <motion.div
+            key={index}
+            className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center mt-6"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <h3 className="text-lg font-bold">{review.name}</h3>
+            <p className="text-gray-600 text-sm mt-2">{review.review}</p>
+            <div className="flex mt-2">
+              {[...Array(5)].map((_, i) => (
+                <FaStar
+                  key={i}
+                  className={
+                    i < review.rating ? "text-yellow-500" : "text-gray-300"
+                  }
+                />
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="mt-10 bg-blue-600 rounded-lg shadow-lg p-6">
+        <h3 className="text-2xl font-bold mb-4 text-white">Tambahkan Review</h3>
+        <input
+          type="text"
+          placeholder="Nama"
+          value={newReview.name}
+          onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
+          className="w-full p-2 mb-3 border-rounded"
+        />
+        <textarea
+          placeholder="Ulasan"
+          value={newReview.review}
+          onChange={(e) =>
+            setNewReview({ ...newReview, review: e.target.value })
+          }
+          className="w-full p-2 mb-3 border rounded"
+        />
+        <div className="flex mb-3">
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              className={
+                i < newReview.rating ? "text-yellow-500" : "text-gray-300"
+              }
+              onClick={() => setNewReview({ ...newReview, rating: i + 1 })}
+            />
+          ))}
+        </div>
+        <button
+          onClick={handleReviewSubmit}
+          className="bg-white text-blue px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Tambahkan Review
+        </button>
       </div>
     </section>
   );

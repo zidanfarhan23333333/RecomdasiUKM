@@ -35,14 +35,7 @@ const Navbar = () => {
               Layanan
             </Link>
           </li>
-          <li>
-            <Link
-              to="/cari-pelatih"
-              className="hover:text-yellow-300 transition duration-300 ease-in-out"
-            >
-              Cari Pelatih
-            </Link>
-          </li>
+
           <li>
             <Link
               to="/riwayat"

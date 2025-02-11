@@ -45,10 +45,6 @@ const InformasiFitur = () => {
           keahlian, lokasi, dan jadwal.
         </p>
 
-        <button className="bg-blue-600 text-white py-2 px-4 rounded-lg mt-6 mb-3">
-          Lihat Semua
-        </button>
-
         <div className="grid md:grid-cols-2 gap-6 mt-8">
           {fiturList.map((fitur, index) => (
             <div
