@@ -6,8 +6,10 @@ import Bulutangkis from "../assets/bulutangkis.png";
 import Voli from "../assets/voli.png";
 import Tkd from "../assets/tkd.png";
 import Esport from "../assets/esport.png";
+import { useNavigate } from "react-router-dom";
 
 const Divisi = () => {
+  const navigate = useNavigate();
   const divisiList = [
     { name: "Divisi Futsal", img: Futsal },
     { name: "Divisi Voli", img: Voli },
@@ -29,7 +31,10 @@ const Divisi = () => {
         bidang olahraga tertentu. Semua divisi tersebut berada di bawah naungan
         UKM Olahraga.
       </p>
-      <button className="bg-blue-600 text-white py-2 px-4 rounded-lg mb-6">
+      <button
+        onClick={() => navigate("layanan")}
+        className="bg-blue-600 text-white py-2 px-4 rounded-lg mb-6"
+      >
         Lihat Semua
       </button>
 

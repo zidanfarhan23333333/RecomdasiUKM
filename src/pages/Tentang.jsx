@@ -7,6 +7,7 @@ import Prabu from "../assets/prabu.png";
 import Zulham from "../assets/zulham.png";
 import Rama from "../assets/rama.png";
 import Riza from "../assets/riza.png";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const trainers = [
   {
@@ -52,6 +53,7 @@ const trainers = [
 ];
 
 const SearchCoach = () => {
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
 
@@ -136,7 +138,10 @@ const SearchCoach = () => {
               Prestasi: {coach.achievement}
             </p>
             <p className="text-green-500 font-bold mt-2">Rp {coach.price}</p>
-            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow">
+            <button
+              onClick={() => navigate(`/pelatih/${index}`)}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow"
+            >
               Detail
             </button>
             <FaEllipsisH className="absolute top-2 right-2 text-gray-500 cursor-pointer" />

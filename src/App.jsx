@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import Tentang from "./pages/Tentang";
 import About from "./pages/About";
 import Layanan from "./pages/Layanan";
+import DetailPelatih from "./components/DetailPelatih";
+import Pembayaran from "./components/Pembayaran";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/tentang" element={<Tentang />} />
         <Route path="/about" element={<About />} />
         <Route path="/layanan" element={<Layanan />} />
+        <Route path="pelatih/:id" element={<DetailPelatih />} />
+        <Route path="pembayaran/:id" element={<Pembayaran />} />
       </Routes>
       <Footer />
     </Router>
