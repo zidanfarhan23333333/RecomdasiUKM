@@ -38,7 +38,7 @@ const Navbar = () => {
 
           <li>
             <Link
-              to="/riwayat"
+              to="/riwayatpesan"
               className="hover:text-yellow-300 transition duration-300 ease-in-out"
             >
               Riwayat

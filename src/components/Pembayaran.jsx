@@ -12,7 +12,7 @@ const Pembayaran = () => {
       {/* Tombol Kembali */}
       <button
         className="text-blue-600 flex items-center mb-4"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("pelatih/:id")}
       >
         &larr; Kembali
       </button>

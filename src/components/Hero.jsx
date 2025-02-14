@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Banner from "../assets/2.jpg";
+import Banner from "../assets/3.jpg";
 import { FaFacebookF, FaTiktok, FaInstagram } from "react-icons/fa";
 
 const Hero = () => {

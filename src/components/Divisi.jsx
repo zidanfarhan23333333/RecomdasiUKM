@@ -24,7 +24,7 @@ const Divisi = () => {
       <h2 className="text-3xl md:text-4xl font-bold text-left mb-4 border-l-4 border-blue-500 pl-4">
         Divisi <br /> UKM Olahraga
       </h2>
-      <p className="text-left max-w-xl mb-10">
+      <p className="text-justify max-w-xl mb-10">
         UKM Olahraga Universitas Muhammadiyah Magelang memiliki 6 divisi utama,
         yaitu Futsal, Basket, Taekwondo, Bulutangkis, Esport, dan Voli. Setiap
         divisi dirancang untuk mengakomodasi minat dan bakat mahasiswa dalam
