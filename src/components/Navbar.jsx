@@ -48,7 +48,7 @@ const Navbar = () => {
 
         {/* Tombol Daftar */}
         <Link
-          to="/daftar"
+          to="/register"
           className="bg-yellow-400 text-blue-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out"
         >
           Daftar
