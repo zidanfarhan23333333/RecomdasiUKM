@@ -1,27 +1,25 @@
-const CriteriaWeight = require("../models/kriteriaModel");
+const Criteria = require("../models/kriteriaModel");
 
-// Ambil semua bobot kriteria
-exports.getAllCriteriaWeights = async (req, res) => {
+// Mendapatkan semua kriteria
+const getAllCriteria = async (req, res) => {
   try {
-    const criteria = await CriteriaWeight.find();
-    res.json(criteria);
+    const criteria = await Criteria.find();
+    res.status(200).json(criteria);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 };
 
-//Tambah/ update bobot kriteria
-
-exports.updateCriteriaWeight = async (req, res) => {
-  const { criteria, weight } = req.body;
+// Menambahkan kriteria baru
+const addCriteria = async (req, res) => {
   try {
-    const updateCriteria = await CriteriaWeight.findOneAndUpdate(
-      { criteria },
-      { weight },
-      { new: true, upsert: true }
-    );
-    res.json(updateCriteria);
+    const { name, weight } = req.body;
+    const newCriteria = new Criteria({ name, weight });
+    await newCriteria.save();
+    res.status(201).json(newCriteria);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Gagal menambahkan kriteria" });
   }
 };
+
+module.exports = { getAllCriteria, addCriteria };

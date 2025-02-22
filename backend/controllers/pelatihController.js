@@ -1,4 +1,4 @@
-const Coach = require("../models/coachModel");
+const Coach = require("../models/pelatihModel");
 
 // ✅ Ambil semua pelatih
 exports.getAllCoaches = async (req, res) => {

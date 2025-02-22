@@ -1,4 +1,4 @@
-const mongoose = require;
+const mongoose = require("mongoose");
 
 const CoachComparisonSchema = new mongoose.Schema({
   division: { type: String, required: true },
@@ -15,4 +15,5 @@ const CoachComparisonSchema = new mongoose.Schema({
     },
   ],
 });
+
 module.exports = mongoose.model("CoachComparison", CoachComparisonSchema);

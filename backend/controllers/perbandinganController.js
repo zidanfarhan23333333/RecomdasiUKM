@@ -1,6 +1,7 @@
 const CoachComparison = require("../models/nilaiModel");
 
-exports.getAllComaprisons = async (req, res) => {
+// ✅ Ambil semua perbandingan pelatih
+exports.getAllComparisons = async (req, res) => {
   try {
     const comparisons = await CoachComparison.find();
     res.json(comparisons);
